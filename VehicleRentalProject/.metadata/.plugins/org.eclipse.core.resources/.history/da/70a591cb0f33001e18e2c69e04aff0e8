@@ -1,0 +1,156 @@
+package com.sirion.controller;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sirion.entity.Booking;
+import com.sirion.entity.Customer;
+import com.sirion.entity.Driver;
+import com.sirion.entity.Vehicle;
+import com.sirion.proxy.CustomerProxy;
+import com.sirion.proxy.VehicleProxy;
+import com.sirion.repository.BookingRepository;
+import com.sirion.repository.VehicleRepository;
+import com.sirion.service.BookingService;
+import com.sirion.service.CustomerService;
+import com.sirion.service.DriverService;
+import com.sirion.service.VehicleService;
+
+import jakarta.validation.constraints.Null;
+
+@RestController
+@RequestMapping("booking")
+public class BookingController {
+	@Autowired
+	private BookingService bs;
+	@Autowired
+	private CustomerService cs;
+	@Autowired
+	private VehicleService vs;
+	@Autowired
+	private DriverService ds;
+
+//	@Autowired
+//	private CustomerProxy custProxy;
+//	@Autowired
+	private VehicleProxy vehicleProxy;
+	
+	Logger logger = LoggerFactory.getLogger(BookingController.class);
+
+	@GetMapping("viewall")
+	public List<Booking> getAllBooking() {
+		List<Booking> li = bs.findAll();
+		return li;
+	}
+
+	@GetMapping("viewByCustomer/{obj}")
+	public List<Booking> getBookingByCustomer(@RequestBody Customer cust) {
+		List<Booking> li = bs.findByCustomer(cust);
+		return li;
+	}
+
+	@GetMapping("viewByDate/{bookingDate}")
+	public List<Booking> getBookingFromDate(@PathVariable String bookingDate) {
+
+		LocalDate d = LocalDate.parse(bookingDate);
+		List<Booking> li = bs.findByBookingDate(d);
+		return li;
+	}
+
+	@GetMapping("viewByVehicle/{vid}")
+	public List<Booking> getBookingByVehicle(@PathVariable int vid) {
+		Vehicle v = vs.findById(vid);
+
+		List<Booking> li = bs.getBookingByVehicle(v);
+		return li;
+	}
+
+	@GetMapping("booking/{id}")
+	public Booking getBooking(@PathVariable int id) {
+		return bs.getBooking(id);
+	}
+
+
+	
+	
+
+	@GetMapping("GetAllCustomer")
+	public List<Customer> getAllCustomer() {
+		return cs.findAll();
+	}
+
+	@PostMapping
+	public ResponseEntity<String> add(@RequestBody Booking b,@RequestBody String type) {
+//		Vehicle v = vs.findById(vid);
+//		Customer cust = custProxy.getCustomer(custId);
+		Vehicle v = vehicleProxy.getVehicle(type);
+		Booking obj = new Booking();
+		if(v!=null && v.getDriver()!=null) {
+//			b.setCustomer(cust);
+			b.setVehicle(v);
+		    obj = bs.add(b);
+		}
+		else {
+			if(v== null) {
+				
+				logger.error("Vehicle Not present");
+				return new ResponseEntity<String>("Vehicle Not Present", HttpStatus.BAD_REQUEST);
+			}
+			else {
+				logger.error("Driver Not present any");
+				return new ResponseEntity<String>("Driver Not Present", HttpStatus.BAD_REQUEST);
+			}
+		}
+//		Customer cust = cs.getCustomer(custId);
+		
+		return new ResponseEntity<String>("Successfully Booked with id:"+obj.getBookingId(), HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("addCustomer")
+	public List<Customer> addCustomer(@RequestBody Customer c) {
+		cs.add(c);
+		return cs.findAll();
+	}
+	@PostMapping("updateVehicle")
+	public void updateBookingForVehicle(@RequestBody List<Vehicle> v) {
+		Vehicle v1 = v.get(0);
+		Vehicle v2 = v.get(1);
+		bs.updateVehicle(v1,v2);
+	}
+
+	@PutMapping
+	public Booking update(int bId, int vid, LocalDate d1, LocalDate d2, String desc, double cost, double dist) {
+		Booking b = bs.findById(bId);
+		b.setBookingDate(d1);
+		b.setBookedTillDate(d2);
+		b.setTotalCost(cost);
+		b.setBookingDescription(desc);
+		b.setDistance(dist);
+		bs.add(b);
+		return bs.findById(bId);
+	}
+
+	@DeleteMapping
+	public List<Booking> cancalBooking(int bId) {
+		bs.deleteById(bId);
+		return bs.findAll();
+	}
+}

@@ -1,0 +1,52 @@
+package com.sirion.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sirion.entity.Driver;
+import com.sirion.service.DriverService;
+
+@RestController
+@RequestMapping("Driver")
+public class DriverController {
+	@Autowired
+	private DriverService ds;
+	
+	@PostMapping("/addDriver")
+//	public List<Driver> addDriver(int id,String firstName,String lastName,String contactNo,String email,String address,double chargesPerDay,String licenseNo){
+	public List<Driver> addDriver(@RequestBody Driver d){
+//		Driver d = new Driver(id,firstName,lastName,contactNo,email,address,chargesPerDay,licenseNo);
+		ds.add(d);
+		
+		return ds.findAll();
+	}
+	
+	@DeleteMapping
+	public List<Driver> deleteDriver(@RequestBody Driver d){
+		ds.removeDriver(d);
+		return ds.findAll();
+		
+	}
+	@PutMapping
+	public Driver updateDriver(@RequestBody Driver d) {
+		ds.updateDriver(d);
+		return d;
+	}
+	@GetMapping("all")
+	public List<Driver> getAll(){
+		return ds.findAll();
+	}
+	@GetMapping("/id/{id}")
+	public Driver getById(@PathVariable int driverId) {
+		return ds.findById(driverId);
+	}
+}

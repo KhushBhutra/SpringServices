@@ -1,0 +1,5 @@
+package com.sirion.exception;
+
+public class VehicleException {
+
+}

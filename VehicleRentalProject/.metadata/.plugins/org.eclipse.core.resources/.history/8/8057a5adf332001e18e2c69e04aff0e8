@@ -1,0 +1,5 @@
+package com.sirion.Exception;
+
+public class DriverException {
+
+}

@@ -1,0 +1,5 @@
+package com.sirion.repository;
+
+public class VehicleRepository {
+
+}

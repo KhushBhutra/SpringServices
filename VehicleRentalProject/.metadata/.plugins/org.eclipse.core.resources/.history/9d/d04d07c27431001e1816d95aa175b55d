@@ -1,0 +1,17 @@
+package com.sirion.proxy;
+
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.sirion.entity.Vehicle;
+
+@FeignClient(name = "vehicle-service")
+@LoadBalancerClient(name = "vehicle-service")
+public interface VehicleProxy {
+
+	@GetMapping("/id/{id}/did/{did}")
+	public Vehicle getVehicle(@PathVariable int vid,@PathVariable int did);
+}
+

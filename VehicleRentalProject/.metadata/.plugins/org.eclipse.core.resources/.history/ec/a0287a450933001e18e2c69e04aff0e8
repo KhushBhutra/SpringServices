@@ -1,0 +1,20 @@
+package com.sirion.proxy;
+
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.sirion.entity.Vehicle;
+
+import jakarta.ws.rs.Path;
+
+@FeignClient(name = "VEHICLE-SERVICE")
+@LoadBalancerClient(name = "vehicle-service")
+public interface VehicleProxy {
+
+	@GetMapping("vehicle/getVehicleForBooking/{type}")
+	public ResponseEntity<Vehicle> getVehicle(@PathVariable String type);
+}
+

@@ -1,0 +1,30 @@
+package com.sirion.validation;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.sirion.entity.Driver;
+
+
+
+public class ValidationDriver {
+	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = 
+		   Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+	public boolean DriverValidation(Driver d) {
+		if(d.getChargesPerDay()<=0)
+			return false;
+		if(d.getAddress().isBlank())
+			return false;
+		if(d.getContactNumber().length() != 10)
+			return false;
+		 Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(d.getEmail());
+	     if(!matcher.matches())
+	    	 return false;
+	     
+	     if(d.getFirstName().isBlank() || d.getLastName().isBlank() || d.getLicenseNo().isBlank())
+	    	 return false;
+	  
+		return true;
+	}
+}

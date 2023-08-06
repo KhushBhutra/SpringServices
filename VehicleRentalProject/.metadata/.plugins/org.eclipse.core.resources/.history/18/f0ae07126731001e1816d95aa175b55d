@@ -1,0 +1,9 @@
+package com.sirion.service;
+
+import java.util.List;
+
+public interface IDriverService {
+	public void add(Driver d) ;
+	public Driver findById(int id); 
+	public List<Driver> findAll();
+}

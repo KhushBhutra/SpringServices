@@ -1,0 +1,15 @@
+package com.sirion.proxy;
+
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.sirion.entity.Customer;
+
+@FeignClient(name = "customer-service")
+@LoadBalancerClient(name = "customer-service")
+public interface CustomerProxy {
+	@GetMapping("/customer/{custid}")
+	public Customer getCustomer(@PathVariable int custId);
+}

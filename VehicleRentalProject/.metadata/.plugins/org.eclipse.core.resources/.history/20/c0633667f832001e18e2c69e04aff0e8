@@ -1,0 +1,39 @@
+package com.sirion.validation;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.stereotype.Component;
+
+import com.sirion.Exception.DriverException;
+import com.sirion.entity.Driver;
+
+
+@Component
+public class ValidationDriver  {
+	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = 
+		   Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+	
+	
+	public boolean DriverValidation(Driver d) throws DriverException {
+		if(d.getChargesPerDay()<=0) {
+			throw new DriverException("Charges must be greater than zero");
+		}
+		if(d.getAddress().isBlank()) {
+			throw new DriverException("Address must not be blank ");
+		}
+		if(d.getContactNumber().length() != 10 && !d.getContactNumber().matches("[0-9]+")) {
+			throw new DriverException("Phone number is not valid");
+		}
+		 Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(d.getEmail());
+	     if(!matcher.matches()) {
+	    	 throw new DriverException("Email is not valid");
+	     }
+	     
+	     if(d.getFirstName().isBlank() || d.getLastName().isBlank() || d.getLicenseNo().isBlank()) {
+	    	 throw new DriverException("First Name , Last Name , License is not valid");
+	     }
+	  
+		return true;
+	}
+}

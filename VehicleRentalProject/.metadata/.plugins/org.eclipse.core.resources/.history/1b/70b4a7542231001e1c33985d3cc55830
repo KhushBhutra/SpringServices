@@ -1,0 +1,39 @@
+package com.sirion.service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.sirion.entity.Booking;
+import com.sirion.entity.Customer;
+import com.sirion.entity.Vehicle;
+import com.sirion.repository.BookingRepository;
+
+public class BookingService {
+	@Autowired
+	private BookingRepository repo ;
+	public List<Booking> findAll(){
+		return repo.findAll();
+	}
+	public List<Booking> findByCustomer( Customer cust ){
+		return repo.findByCustomer(cust);
+	}
+	public List<Booking> findByBookingDate(LocalDate d){
+		return repo.findByBookingDate(d);
+	}
+	public List<Booking> getBookingByVehicle(Vehicle v){
+		return repo.findByVehicle(v);
+	}
+	public Booking getBooking( int id) {
+		return repo.findById(id).get();
+	}
+	public Booking findById(int id) {
+		return repo.findById(id).get();
+	}
+	public void deleteById(int bId) {
+		repo.deleteById(bId);
+		
+	}
+}

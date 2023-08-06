@@ -1,0 +1,17 @@
+package com.sirion.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sirion.entity.Customer;
+import com.sirion.repository.CustomerRepository;
+
+@Service
+public class CustomerService {
+	@Autowired
+	CustomerRepository repo;
+	
+	public Customer getCustomer(int custId) {
+		return repo.findById(custId).get();
+	}
+}

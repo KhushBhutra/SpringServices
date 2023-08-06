@@ -1,0 +1,5 @@
+package com.sirion.entity;
+
+public class Booking {
+
+}

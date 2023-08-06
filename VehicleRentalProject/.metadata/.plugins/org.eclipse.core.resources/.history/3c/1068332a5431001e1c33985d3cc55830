@@ -1,0 +1,8 @@
+package com.sirion.exception;
+
+public class BookingNotExistsException extends RuntimeException {
+	private String message;
+	public BookingNotExistsException(String msg) {
+		super(msg);
+	}
+}

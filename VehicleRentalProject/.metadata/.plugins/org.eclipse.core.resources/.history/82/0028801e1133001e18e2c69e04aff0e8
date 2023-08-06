@@ -1,0 +1,119 @@
+package com.sirion.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sirion.entity.Driver;
+import com.sirion.entity.Vehicle;
+import com.sirion.exception.VehicleException;
+import com.sirion.proxy.BookingProxy;
+import com.sirion.proxy.DriverProxy;
+import com.sirion.service.VehicleService;
+import com.sirion.validation.VehicleValidation;
+
+
+@RestController
+@RequestMapping("vehicle")
+public class VehicleController {
+	@Autowired
+	private VehicleService vs;
+	
+	@Autowired
+	private DriverProxy driverProxy ;
+	
+	@Autowired
+	private BookingProxy bproxy;
+	
+	@Autowired
+	private VehicleValidation validVehicle;
+	
+	@GetMapping("/getVehicleForBooking/{type}")
+	public Vehicle getvehicleByType(@PathVariable String type) {
+		System.out.println(type+"\t");
+		
+		
+		Vehicle v = vs.findByType(type);
+		if(v == null) {
+			return v;
+		}
+		if(v.getDriver() == null) {
+			Driver d = driverProxy.getDriver();
+			v.setDriver(d);
+		}
+		
+		return v;
+	}
+	
+	@GetMapping("/viewAll")
+	public List<Vehicle> viewAll(){
+		return vs.findAll();
+	}
+	
+	@PostMapping
+	public ResponseEntity<String> addVehicle(@RequestBody Vehicle v){
+		
+		try {
+			validVehicle.VehicleValidation(v);
+//			Driver d = driverProxy.getDriver();
+//			v.setDriver(d);
+			vs.add(v);
+			
+		} catch (VehicleException e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>("Successfully Created with id: "+v.getVehicleId(), HttpStatus.ACCEPTED);
+	}
+	
+	@PutMapping
+	public ResponseEntity<String> updateVehicle(@RequestBody Vehicle v){
+		List<Vehicle> li = new ArrayList<Vehicle>();
+		Vehicle v1 = vs.findById(v.getVehicleId());
+		if(v1 == null)
+			return new ResponseEntity<String>("No Vehicle With this Id", HttpStatus.BAD_REQUEST);
+		System.out.println(v1.getVehicleId());
+		li.add(v1);
+		li.add(v);
+		vs.add(v);
+		bproxy.updateBooking(li);
+		
+		return new ResponseEntity<String>("Updated",HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/updateDriver")
+	public void updateDriver(@RequestBody List<Driver> d) {
+		System.out.println(d.size());
+		Driver d1 = d.get(0);
+		Driver d2 = d.get(1);
+		System.out.println(d1.getContactNumber()+"\t"+d2.getContactNumber());
+	
+		
+		vs.updateDriver(d1,d2);	
+	}
+	
+	@DeleteMapping
+	public List<Vehicle> delete(Vehicle v){
+		
+		List<Vehicle> li = new ArrayList<>();
+		li.add(v);
+		Vehicle v2 = null;
+		li.add(v2);
+		bproxy.updateBooking(li);
+		
+		vs.deleteVehicle(v);
+		return vs.findAll();
+	}
+
+}

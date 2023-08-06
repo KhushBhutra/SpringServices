@@ -1,0 +1,20 @@
+package com.sirion.proxy;
+
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.sirion.entity.Driver;
+
+
+@FeignClient(name = "driver-service")
+@LoadBalancerClient(name = "driver-service")
+@ComponentScan
+public interface DriverProxy {
+
+	@GetMapping("/driver/{did}")
+	public Driver getDriver(@PathVariable int did);
+
+}

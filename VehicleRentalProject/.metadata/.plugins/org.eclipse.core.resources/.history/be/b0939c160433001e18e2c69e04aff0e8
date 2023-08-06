@@ -1,0 +1,14 @@
+package com.sirion.validation;
+
+import com.sirion.entity.Vehicle;
+
+public class VehicleValidation {
+	public boolean VehicleValidation(Vehicle v) {
+		if(v.getChargesPerKM()<=0 || v.getFixedCharges()<0)
+			return false;
+		if(v.getLocation().isBlank() || v.getType().isBlank() || v.getCategory().isBlank() || v.getVehicleNumber().isBlank())
+			return false;
+		return true;
+	}
+
+}
